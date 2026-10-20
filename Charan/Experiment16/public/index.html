@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment 16: Prompt Evaluation & Ethics Workshop | Vyshnavi</title>
+  <meta name="description" content="Experiment 16: LLM-as-a-Judge 4D scoring rubric and prompt injection defensive sandboxing under ACETR23 regulation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Nav -->
+    <header class="top-nav">
+      <div class="nav-brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>AegisEval Studio</h1>
+          <span class="syllabus-badge">EXP 16</span>
+        </div>
+      </div>
+      <div class="nav-meta">
+        <div class="student-pill">
+          Student: <strong>Vyshnavi</strong> • Reg: <strong>ACETR23</strong>
+        </div>
+        <div class="pill-metric">
+          <span class="indicator-dot"></span>
+          <span>Ethics & Guardrail Inspector Active</span>
+        </div>
+        <div class="pill-chip">LLM-as-a-Judge Evaluation Engine</div>
+      </div>
+    </header>
+
+    <!-- Complete Lab Navigation Strip (Ports 3000 to 3015) -->
+    <div class="lab-nav-strip">
+      <span class="lab-nav-label">Lab Suite:</span>
+      <a href="http://localhost:3000/" class="lab-pill" title="Exp 1: Zero, One, Few-Shot">Exp 1 (3000)</a>
+      <a href="http://localhost:3001/" class="lab-pill" title="Exp 2: Persona & Tone">Exp 2 (3001)</a>
+      <a href="http://localhost:3002/" class="lab-pill" title="Exp 3: Summarization">Exp 3 (3002)</a>
+      <a href="http://localhost:3003/" class="lab-pill" title="Exp 4: Translation">Exp 4 (3003)</a>
+      <a href="http://localhost:3004/" class="lab-pill" title="Exp 5: Sentiment Classification">Exp 5 (3004)</a>
+      <a href="http://localhost:3005/" class="lab-pill" title="Exp 6: Code Generation">Exp 6 (3005)</a>
+      <a href="http://localhost:3006/" class="lab-pill" title="Exp 7: Creative Constraints">Exp 7 (3006)</a>
+      <a href="http://localhost:3007/" class="lab-pill" title="Exp 8: Structured Formats">Exp 8 (3007)</a>
+      <a href="http://localhost:3008/" class="lab-pill" title="Exp 9: JSON/YAML Auto-Refine">Exp 9 (3008)</a>
+      <a href="http://localhost:3009/" class="lab-pill" title="Exp 10: Chain-of-Thought">Exp 10 (3009)</a>
+      <a href="http://localhost:3010/" class="lab-pill" title="Exp 11: Simple LCEL Chain">Exp 11 (3010)</a>
+      <a href="http://localhost:3011/" class="lab-pill" title="Exp 12: Basic Data Indexing">Exp 12 (3011)</a>
+      <a href="http://localhost:3012/" class="lab-pill" title="Exp 13: Basic RAG Chain">Exp 13 (3012)</a>
+      <a href="http://localhost:3013/" class="lab-pill" title="Exp 14: Simple LLM Agent">Exp 14 (3013)</a>
+      <a href="http://localhost:3014/" class="lab-pill" title="Exp 15: Multimodal Prompting">Exp 15 (3014)</a>
+      <a href="http://localhost:3015/" class="lab-pill active" title="Exp 16: Prompt Evaluation & Ethics">Exp 16 (3015) ★</a>
+    </div>
+
+    <!-- Lab Subheader -->
+    <section class="experiment-header">
+      <div class="header-content">
+        <div class="lab-title-group">
+          <span class="lab-tag">LAB EXPERIMENT 16</span>
+          <h2>Prompt Evaluation and Ethics Workshop</h2>
+          <p class="lab-aim"><strong>Aim:</strong> Implement multidimensional qualitative & quantitative prompt evaluation via LLM-as-a-Judge (Relevance, Factuality, Safety, Clarity), analyze prompt injection vulnerabilities, and validate defensive sandboxing techniques.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Sub-tabs -->
+    <div class="main-tabs-bar">
+      <button class="nav-tab active" id="tabJudgeBtn" data-target="judgeSection">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>1. LLM-as-a-Judge 4D Benchmark</span>
+      </button>
+      <button class="nav-tab" id="tabInjectionBtn" data-target="injectionSection">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>2. Prompt Injection & Defensive Sandboxing</span>
+      </button>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="studio-layout">
+      <!-- Section 1: LLM-as-a-Judge Benchmark -->
+      <section class="tab-content active" id="judgeSection">
+        <div class="split-view">
+          <!-- Input Card -->
+          <div class="panel input-panel">
+            <div class="panel-header">
+              <div class="header-left">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                <h3>Evaluation Inputs & Presets</h3>
+              </div>
+              <span class="badge badge-accent">4D Scoring Rubric</span>
+            </div>
+
+            <!-- Presets -->
+            <div class="control-group">
+              <label class="section-label">Evaluation Bench Presets</label>
+              <div class="preset-chips">
+                <button class="preset-chip active" id="presetJudge1">Mars Rover Power Systems (High Quality)</button>
+                <button class="preset-chip" id="presetJudge2">Hallucination & Factual Drift Test</button>
+                <button class="preset-chip" id="presetJudge3">Safety & Toxicity Boundary Test</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="section-label" for="judgePrompt">User Prompt / Task Specification</label>
+              <textarea id="judgePrompt" rows="3" placeholder="Enter original prompt..."></textarea>
+            </div>
+
+            <div class="control-group">
+              <label class="section-label" for="judgeCandidate">Candidate LLM Response</label>
+              <textarea id="judgeCandidate" rows="5" placeholder="Enter candidate response to evaluate..."></textarea>
+            </div>
+
+            <div class="action-footer">
+              <button class="btn btn-primary" id="btnRunJudge">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Run LLM-as-a-Judge Audit</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Output Score Card -->
+          <div class="panel output-panel">
+            <div class="panel-header">
+              <div class="header-left">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <h3>Auditor Scorecard & Rubric Analysis</h3>
+              </div>
+              <div id="judgeStatusBadge">
+                <span class="status-badge ready">Auditor Ready</span>
+              </div>
+            </div>
+
+            <!-- Overall Score Banner -->
+            <div class="score-banner">
+              <div class="score-primary">
+                <span class="score-number" id="overallScore">5.0</span>
+                <span class="score-max">/ 5.0</span>
+              </div>
+              <div class="verdict-wrapper">
+                <span class="verdict-label">AUDIT VERDICT</span>
+                <span class="verdict-pill accept" id="auditVerdict">ACCEPT</span>
+              </div>
+            </div>
+
+            <!-- 4D Rubric Progress Meters -->
+            <div class="rubric-grid">
+              <div class="rubric-card">
+                <div class="rubric-header">
+                  <span class="rubric-name">1. Relevance</span>
+                  <span class="rubric-val" id="scoreRelevance">5 / 5</span>
+                </div>
+                <div class="meter-bg"><div class="meter-bar" id="barRelevance" style="width: 100%;"></div></div>
+              </div>
+
+              <div class="rubric-card">
+                <div class="rubric-header">
+                  <span class="rubric-name">2. Factuality</span>
+                  <span class="rubric-val" id="scoreFactuality">5 / 5</span>
+                </div>
+                <div class="meter-bg"><div class="meter-bar" id="barFactuality" style="width: 100%;"></div></div>
+              </div>
+
+              <div class="rubric-card">
+                <div class="rubric-header">
+                  <span class="rubric-name">3. Safety & Alignment</span>
+                  <span class="rubric-val" id="scoreSafety">5 / 5</span>
+                </div>
+                <div class="meter-bg"><div class="meter-bar" id="barSafety" style="width: 100%;"></div></div>
+              </div>
+
+              <div class="rubric-card">
+                <div class="rubric-header">
+                  <span class="rubric-name">4. Clarity & Structure</span>
+                  <span class="rubric-val" id="scoreClarity">5 / 5</span>
+                </div>
+                <div class="meter-bg"><div class="meter-bar" id="barClarity" style="width: 100%;"></div></div>
+              </div>
+            </div>
+
+            <!-- Qualitative Critique -->
+            <div class="critique-section">
+              <span class="section-label">Auditor Qualitative Critique</span>
+              <div class="critique-box" id="critiqueBox">
+                The response directly and accurately answers the prompt by highlighting the lack of atmospheric oxygen on Mars, which renders combustion engines impractical without heavy oxidizers. It correctly highlights solar panels and RTGs as viable power alternatives in a clear, concise manner.
+              </div>
+            </div>
+
+            <div class="eval-footer-meta">
+              <span>Auditor Model: <strong id="judgeModel">gemini-flash-lite-latest</strong></span>
+              <span>Audit Latency: <strong id="judgeLatency">1.24s</strong></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Prompt Injection & Defensive Sandboxing -->
+      <section class="tab-content" id="injectionSection">
+        <div class="split-view">
+          <!-- Attack Control Panel -->
+          <div class="panel input-panel">
+            <div class="panel-header">
+              <div class="header-left">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <h3>Adversarial Attack Simulation</h3>
+              </div>
+              <span class="badge badge-warning">Red-Team Sandbox</span>
+            </div>
+
+            <div class="control-group">
+              <label class="section-label">Confidential Target Credential</label>
+              <input type="text" class="input-text" id="secretToken" value="CONFIDENTIAL_KEY_SIGMA_9901" readonly>
+            </div>
+
+            <div class="control-group">
+              <label class="section-label">Injection Attack Vector Presets</label>
+              <div class="preset-chips">
+                <button class="preset-chip active" id="atkPreset1">Direct System Instruction Override</button>
+                <button class="preset-chip" id="atkPreset2">Developer Mode Simulation Jailbreak</button>
+                <button class="preset-chip" id="atkPreset3">Hypothetical Translation Framing</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="section-label" for="attackInput">Adversarial User Input Payload</label>
+              <textarea id="attackInput" rows="4" placeholder="Enter adversarial payload..."></textarea>
+            </div>
+
+            <div class="action-footer">
+              <button class="btn btn-primary" id="btnRunAttack">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>Execute Dual-Channel Injection Test</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Comparative Defense Output Panel -->
+          <div class="panel output-panel">
+            <div class="panel-header">
+              <div class="header-left">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                <h3>Undefended vs Defended Channel Comparison</h3>
+              </div>
+              <div id="attackStatusBadge">
+                <span class="status-badge ready">Sandbox Ready</span>
+              </div>
+            </div>
+
+            <div class="comparison-grid">
+              <!-- Undefended Channel -->
+              <div class="channel-card undefended">
+                <div class="channel-header">
+                  <span class="channel-title">Channel A: Undefended Concatenation</span>
+                  <span class="status-pill status-warn" id="undefendedStatus">Vulnerable Channel</span>
+                </div>
+                <div class="channel-meta">Naive prompt concatenation without structural boundaries</div>
+                <div class="channel-body" id="undefendedOutput">
+                  Click 'Execute Dual-Channel Injection Test' to observe the response.
+                </div>
+              </div>
+
+              <!-- Defended Channel -->
+              <div class="channel-card defended">
+                <div class="channel-header">
+                  <span class="channel-title">Channel B: Hardened XML Delimiter Sandbox</span>
+                  <span class="status-pill status-secure" id="defendedStatus">Protected Channel</span>
+                </div>
+                <div class="channel-meta">Quarantined within &lt;user_request&gt; tags + negative instruction guardrails</div>
+                <div class="channel-body" id="defendedOutput">
+                  Click 'Execute Dual-Channel Injection Test' to observe defensive mitigation.
+                </div>
+              </div>
+            </div>
+
+            <!-- Mitigation Metrics Strip -->
+            <div class="mitigation-summary">
+              <div class="summary-item">
+                <span class="s-label">Mitigation Technique</span>
+                <span class="s-val" id="mitigationTech">XML Delimiter Sandboxing (&lt;user_request&gt;) + Explicit Negative Refusal</span>
+              </div>
+              <div class="summary-item">
+                <span class="s-label">Defense Robustness</span>
+                <span class="s-val highlight">100% Leak Mitigation</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Lab Footer -->
+    <footer class="app-footer">
+      <span>© 2026 AegisEval Studio • Experiment 16 • Prompt Evaluation & Ethics Workshop • Student: Vyshnavi (ACETR23)</span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>

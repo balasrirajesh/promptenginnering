@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment 10: Chain-of-Thought & Task Decomposition | Vyshnavi</title>
+  <meta name="description" content="Experiment 10: Chain-of-Thought & Task Decomposition Prompting - contrasting Direct Baseline against Zero-Shot Step-by-Step Reasoning under ACETR23 regulation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="brand-logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 17L12 22L22 17" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="brand-name">PromptCraft Studio</span>
+      <span class="brand-badge">EXP 10</span>
+      <span class="student-pill">Student: <strong>Vyshnavi</strong> • Reg: <strong>ACETR23</strong></span>
+    </div>
+
+    <div class="nav-actions">
+      <button class="nav-btn" onclick="window.location.reload()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+        <span>Reset Studio</span>
+      </button>
+      <button class="nav-btn" onclick="window.location.href='http://localhost:3000/'">
+        <span>Lab Portal Home</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Complete Lab Experiments Navigation Strip (Ports 3000 - 3009) -->
+  <div class="lab-nav-strip">
+    <span class="lab-nav-label">Lab Suite:</span>
+    <a href="http://localhost:3000/" class="lab-pill" title="Exp 1: Zero, One, Few-Shot">Exp 1 (3000)</a>
+    <a href="http://localhost:3001/" class="lab-pill" title="Exp 2: Persona & Tone">Exp 2 (3001)</a>
+    <a href="http://localhost:3002/" class="lab-pill" title="Exp 3: Summarization">Exp 3 (3002)</a>
+    <a href="http://localhost:3003/" class="lab-pill" title="Exp 4: Translation">Exp 4 (3003)</a>
+    <a href="http://localhost:3004/" class="lab-pill" title="Exp 5: Sentiment Classification">Exp 5 (3004)</a>
+    <a href="http://localhost:3005/" class="lab-pill" title="Exp 6: Code Generation">Exp 6 (3005)</a>
+    <a href="http://localhost:3006/" class="lab-pill" title="Exp 7: Creative Constraints">Exp 7 (3006)</a>
+    <a href="http://localhost:3007/" class="lab-pill" title="Exp 8: Structured Formats">Exp 8 (3007)</a>
+    <a href="http://localhost:3008/" class="lab-pill" title="Exp 9: JSON/YAML Auto-Refine">Exp 9 (3008)</a>
+    <a href="http://localhost:3009/" class="lab-pill active" title="Exp 10: Chain-of-Thought Reasoning">Exp 10 (3009) ★</a>
+  </div>
+
+  <!-- Mode Selector Strip -->
+  <section class="mode-strip">
+    <div class="mode-strip-header">
+      <span class="mode-category">REASONING & FORMAT MODES</span>
+      <h3 class="mode-title">Prompt Studio Modes</h3>
+    </div>
+    <div class="mode-cards">
+      <div class="mode-card" data-mode="structured" onclick="selectMode('structured')">
+        <div class="mode-card-icon blue-icon">📑</div>
+        <div class="mode-card-content">
+          <h4>Structured Format</h4>
+          <p>Markdown tables & schemas</p>
+        </div>
+      </div>
+      <div class="mode-card" data-mode="json" onclick="selectMode('json')">
+        <div class="mode-card-icon purple-icon">⚙️</div>
+        <div class="mode-card-content">
+          <h4>JSON / YAML Generation</h4>
+          <p>Auto-refine syntax errors</p>
+        </div>
+      </div>
+      <div class="mode-card active" data-mode="cot" onclick="selectMode('cot')">
+        <div class="mode-card-icon teal-icon">🧠</div>
+        <div class="mode-card-content">
+          <div class="mode-card-title-row">
+            <h4>Chain-of-Thought</h4>
+            <span class="active-dot"></span>
+          </div>
+          <p>Step-by-step reasoning</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Studio Workspace -->
+  <div class="studio-layout">
+    <!-- Left Sidebar: Prompt Editor -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h3>Prompt Editor</h3>
+        <span class="hint-text">Press <strong>Enter</strong> to run</span>
+      </div>
+
+      <div class="editor-box">
+        <textarea id="promptInput" class="prompt-textarea" rows="6" placeholder="Type your multi-step logic problem or reasoning question here..."></textarea>
+        <button id="runValidationBtn" class="btn btn-primary" onclick="handleRunValidation()">
+          <span class="btn-text">Run Chain-of-Thought Validation</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Reference Example Card -->
+      <div class="reference-card">
+        <div class="ref-header">
+          <span class="ref-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            REFERENCE EXAMPLE
+          </span>
+          <div class="ref-actions">
+            <button id="usePromptBtn" class="ref-btn" onclick="useReferencePrompt()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              Use
+            </button>
+            <button id="copyPromptBtn" class="ref-btn" onclick="copyReferencePrompt()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+        <div id="referencePromptText" class="ref-code">A farmer has 10 sheep, and all but 7 die. How many are left? Also, if he buys 5 more and gives half of his total flock to his neighbor, how many does he have?</div>
+      </div>
+
+      <!-- Presets / Quick Tests -->
+      <div class="presets-section">
+        <span class="presets-label">REASONING PRESETS:</span>
+        <div class="preset-buttons">
+          <button class="preset-btn" onclick="setPromptPreset('farmer')">
+            <span>🐑 Farmer's Sheep Problem</span>
+            <span>➔</span>
+          </button>
+          <button class="preset-btn" onclick="setPromptPreset('batball')">
+            <span>⚾ Bat & Ball ($1.10) Logic</span>
+            <span>➔</span>
+          </button>
+          <button class="preset-btn" onclick="setPromptPreset('strawberry')">
+            <span>🍓 'Strawberry' Letter Count</span>
+            <span>➔</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- User Profile Badge -->
+      <div class="user-profile">
+        <div class="avatar">V</div>
+        <div class="user-details">
+          <span class="user-name">Vyshnavi</span>
+          <span class="user-role">Student Engineer • ACETR23</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Column: Live Output Stream & Evaluation Inspector -->
+    <main class="output-stream">
+      <div class="stream-header">
+        <div>
+          <h2 class="welcome-heading">Welcome, <span class="highlight-name">Vyshnavi</span></h2>
+          <p class="stream-subtitle">Live Chain-of-Thought Reasoning Stream & Direct Baseline Inspector</p>
+        </div>
+        <div class="mode-indicator-pill">
+          <span class="pill-dot"></span>
+          <span>Mode: Chain-of-Thought Evaluation</span>
+        </div>
+      </div>
+
+      <!-- Assistant Ready Banner -->
+      <div class="assistant-banner">
+        <div class="banner-badge">
+          <span class="sparkle-icon">✦</span> Chain-of-Thought Engine Ready
+        </div>
+        <p class="banner-text">Welcome to Experiment 10. Compare how standard direct baseline prompting performs against Zero-Shot Chain-of-Thought (Step-by-Step reasoning) to inspect deduction accuracy and reduce intermediate cognitive errors.</p>
+      </div>
+
+      <!-- Chat / Stream Container -->
+      <div id="chatStream" class="chat-stream">
+        <!-- Rendered dynamically -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Studio Footer -->
+  <footer class="studio-footer">
+    © 2026 PromptCraft Studio • Experiment 10: Chain-of-Thought & Task Decomposition • Student: Vyshnavi (ACETR23)
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>

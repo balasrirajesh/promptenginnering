@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f6f8fc" />
+  <title>Experiment 4 | Prompt Failure Diagnostics</title>
+  <meta name="description"
+    content="Diagnose ambiguous, contradictory, and incomplete prompts using Gemini 2.5 Flash, then refine and compare model responses." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=2" />
+</head>
+
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="app-wrapper">
+
+    <header class="header">
+      <div class="nav-row">
+        <div class="exp-badge">
+          <span class="badge-dot"></span>
+          Experiment 04 <span>·</span> Prompt Engineering Lab
+        </div>
+
+        <div class="student-meta">
+          <span>Student: <strong>Vyshnavi</strong></span>
+          <span>·</span>
+          <span>Reg: <strong>ACETR23</strong></span>
+        </div>
+
+        <nav class="nav-links" aria-label="Experiments">
+          <a href="http://localhost:3000" class="nav-link">Exp 1</a>
+          <a href="http://localhost:3001" class="nav-link">Exp 2</a>
+          <a href="http://localhost:3002" class="nav-link">Exp 3</a>
+        </nav>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-eyebrow">AI · QUALITY ANALYSIS · REFINEMENT</div>
+
+        <h1 class="header-title">
+          Find the flaw.<br />
+          <span class="grad-text">Refine the prompt.</span>
+        </h1>
+
+        <p class="header-subtitle">
+          Discover ambiguity, contradictory instructions, missing context, and format errors.
+          Compare the original prompt with an improved version using Gemini 2.5 Flash.
+        </p>
+
+        <div class="concept-strip">
+          <div class="cs-item"><span class="cs-icon">🔍</span> Ambiguity Detection</div>
+          <div class="cs-item"><span class="cs-icon">⚡</span> Contradiction Analysis</div>
+          <div class="cs-item"><span class="cs-icon">📋</span> Context Validation</div>
+          <div class="cs-item"><span class="cs-icon">✨</span> Prompt Refinement</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="pipeline-bar" id="pipeline-bar" aria-label="Diagnostic pipeline">
+      <div class="pl-step active" id="pl-1">
+        <div class="pl-dot">1</div>
+        <div class="pl-label">Input Prompt</div>
+      </div>
+      <div class="pl-line" id="pl-line-1"></div>
+
+      <div class="pl-step" id="pl-2">
+        <div class="pl-dot">2</div>
+        <div class="pl-label">Analyze Issues</div>
+      </div>
+      <div class="pl-line" id="pl-line-2"></div>
+
+      <div class="pl-step" id="pl-3">
+        <div class="pl-dot">3</div>
+        <div class="pl-label">Quality Score</div>
+      </div>
+      <div class="pl-line" id="pl-line-3"></div>
+
+      <div class="pl-step" id="pl-4">
+        <div class="pl-dot">4</div>
+        <div class="pl-label">Baseline LLM</div>
+      </div>
+      <div class="pl-line" id="pl-line-4"></div>
+
+      <div class="pl-step" id="pl-5">
+        <div class="pl-dot">5</div>
+        <div class="pl-label">Refinement</div>
+      </div>
+      <div class="pl-line" id="pl-line-5"></div>
+
+      <div class="pl-step" id="pl-6">
+        <div class="pl-dot">6</div>
+        <div class="pl-label">Improved LLM</div>
+      </div>
+    </section>
+
+    <main>
+      <section class="input-card">
+        <div class="input-header">
+          <div class="input-title">
+            <span class="it-icon">✎</span>
+            <span>Prompt Playground</span>
+          </div>
+          <div class="char-counter">
+            <span id="char-count">0</span> characters
+          </div>
+        </div>
+
+        <p class="section-description">
+          Start with a flawed prompt or choose a sample below to explore common AI failure modes.
+        </p>
+
+        <div class="presets-container">
+          <div class="presets-label">TRY A FAILURE SCENARIO</div>
+
+          <div class="presets-grid" id="presets-grid">
+            <button type="button" class="preset-btn" data-preset="contradiction">
+              <span class="preset-icon">⚖️</span>
+              <span class="pb-tag">Contradiction</span>
+              <span class="pb-title">Explain quantum physics in 15 words with exhaustive technical depth for a
+                toddler.</span>
+            </button>
+
+            <button type="button" class="preset-btn" data-preset="ambiguity">
+              <span class="preset-icon">❔</span>
+              <span class="pb-tag">Ambiguity</span>
+              <span class="pb-title">Fix it so they like it tomorrow.</span>
+            </button>
+
+            <button type="button" class="preset-btn" data-preset="missing-format">
+              <span class="preset-icon">📄</span>
+              <span class="pb-tag">Missing Context</span>
+              <span class="pb-title">Extract the user's information from this email.</span>
+            </button>
+
+            <button type="button" class="preset-btn" data-preset="false-premise">
+              <span class="preset-icon">🧩</span>
+              <span class="pb-tag">False Premise</span>
+              <span class="pb-title">Explain how Python replaced HTML for web page styling.</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="prompt-box-wrapper">
+          <label for="prompt-input" class="field-label">YOUR ORIGINAL PROMPT</label>
+          <textarea id="prompt-input" class="prompt-textarea" rows="5"
+            placeholder="Enter a vague, incomplete, or contradictory prompt..." spellcheck="true"></textarea>
+        </div>
+
+        <div class="action-row">
+          <button type="button" class="btn-run" id="run-btn">
+            <span class="btn-icon">▶</span>
+            <span>Run Diagnostic Pipeline</span>
+          </button>
+
+          <button type="button" class="btn-clear" id="clear-btn">
+            <span>↺</span> Clear Input
+          </button>
+        </div>
+
+        <div class="privacy-note">
+          <span>✦</span>
+          Your prompt will be analyzed for clarity, consistency, and completeness.
+        </div>
+      </section>
+
+      <section class="loading-card" id="loading-card" hidden>
+        <div class="loading-spinner"></div>
+
+        <div class="loading-info">
+          <h3 class="loading-title" id="loading-stage-text">Analyzing prompt failure modes...</h3>
+          <p class="loading-sub" id="loading-sub-text">
+            Detecting ambiguity, contradictions, and missing constraints with Gemini.
+          </p>
+        </div>
+
+        <div class="loading-steps-list">
+          <div class="ls-item" id="ls-1"><span class="ls-dot"></span> 1. Diagnosing root-cause failure modes</div>
+          <div class="ls-item" id="ls-2"><span class="ls-dot"></span> 2. Computing clarity and coherence scores</div>
+          <div class="ls-item" id="ls-3"><span class="ls-dot"></span> 3. Generating baseline model response</div>
+          <div class="ls-item" id="ls-4"><span class="ls-dot"></span> 4. Synthesizing a refined prompt</div>
+          <div class="ls-item" id="ls-5"><span class="ls-dot"></span> 5. Generating improved response</div>
+        </div>
+      </section>
+
+      <section class="error-banner" id="error-banner" role="alert" hidden>
+        <div class="eb-icon">⚠️</div>
+        <div class="eb-content">
+          <strong>Pipeline Error</strong>
+          <span id="error-message">An error occurred during evaluation.</span>
+        </div>
+        <button type="button" class="eb-retry" id="error-retry-btn">Retry</button>
+      </section>
+
+      <div class="results-container" id="results-container" hidden>
+
+        <section class="diag-banner" id="diag-banner">
+          <div class="db-left">
+            <div class="db-badge">DIAGNOSTIC VERDICT</div>
+            <h2 class="db-title" id="primary-failure-text">Prompt Analysis Results</h2>
+            <p class="db-summary" id="diagnostic-summary">
+              Your prompt has been analyzed for ambiguity, contradictory constraints, and missing information.
+            </p>
+          </div>
+
+          <div class="db-score-card">
+            <div class="score-badge-circle" id="overall-badge-circle">
+              <span class="sbc-num" id="sbc-original">32</span>
+              <span class="sbc-denom">/100</span>
+            </div>
+            <div class="sbc-label">Original Prompt Score</div>
+          </div>
+        </section>
+
+        <section class="issues-section">
+          <div class="section-heading">
+            <span class="sh-icon">⚠️</span>
+            <span>Detected Failure Modes</span>
+          </div>
+          <p class="section-description">
+            Root causes and edge cases identified in the original prompt.
+          </p>
+          <div class="issues-grid" id="issues-grid"></div>
+        </section>
+
+        <section class="prompts-comparison-section">
+          <div class="section-heading">
+            <span class="sh-icon">🔄</span>
+            <span>Prompt Refinement</span>
+          </div>
+          <p class="section-description">
+            Compare the original instructions with the structured, improved prompt.
+          </p>
+
+          <div class="prompts-grid">
+            <article class="prompt-card original-prompt-card">
+              <div class="pc-header">
+                <span class="pc-badge flaw-badge">01 · ORIGINAL PROMPT</span>
+                <span class="pc-status">Needs Improvement</span>
+              </div>
+              <div class="pc-content" id="original-prompt-display"></div>
+              <div class="pc-footer flaw-footer">
+                <div class="pc-flaw-tag">✕ Ambiguity and constraint risks</div>
+              </div>
+            </article>
+
+            <article class="prompt-card refined-prompt-card">
+              <div class="pc-header">
+                <span class="pc-badge fixed-badge">02 · REFINED PROMPT</span>
+                <span class="pc-status resolved-status">Improved Structure</span>
+              </div>
+              <div class="pc-content" id="refined-prompt-display"></div>
+
+              <div class="remediation-box">
+                <div class="rb-title">Applied Engineering Fixes</div>
+                <ul class="rb-list" id="remediation-list"></ul>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="metrics-section">
+          <div class="section-heading">
+            <span class="sh-icon">📊</span>
+            <span>Prompt Quality Metrics</span>
+          </div>
+          <p class="section-description">
+            Review the quality scores before and after refinement.
+          </p>
+
+          <div class="metrics-grid">
+            <article class="metric-card" id="metric-clarity">
+              <div class="mc-header">
+                <span class="mc-name">Clarity</span>
+                <span class="mc-delta" id="delta-clarity">+65</span>
+              </div>
+              <div class="mc-bars">
+                <div class="bar-row">
+                  <span class="br-lbl">Original</span>
+                  <div class="br-track">
+                    <div class="br-fill original-fill" id="bar-orig-clarity" style="width:30%"></div>
+                  </div>
+                  <span class="br-val" id="val-orig-clarity">30</span>
+                </div>
+                <div class="bar-row">
+                  <span class="br-lbl">Refined</span>
+                  <div class="br-track">
+                    <div class="br-fill refined-fill" id="bar-ref-clarity" style="width:95%"></div>
+                  </div>
+                  <span class="br-val" id="val-ref-clarity">95</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="metric-card" id="metric-specificity">
+              <div class="mc-header">
+                <span class="mc-name">Specificity</span>
+                <span class="mc-delta" id="delta-specificity">+70</span>
+              </div>
+              <div class="mc-bars">
+                <div class="bar-row">
+                  <span class="br-lbl">Original</span>
+                  <div class="br-track">
+                    <div class="br-fill original-fill" id="bar-orig-specificity" style="width:25%"></div>
+                  </div>
+                  <span class="br-val" id="val-orig-specificity">25</span>
+                </div>
+                <div class="bar-row">
+                  <span class="br-lbl">Refined</span>
+                  <div class="br-track">
+                    <div class="br-fill refined-fill" id="bar-ref-specificity" style="width:94%"></div>
+                  </div>
+                  <span class="br-val" id="val-ref-specificity">94</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="metric-card" id="metric-coherence">
+              <div class="mc-header">
+                <span class="mc-name">Coherence</span>
+                <span class="mc-delta" id="delta-coherence">+60</span>
+              </div>
+              <div class="mc-bars">
+                <div class="bar-row">
+                  <span class="br-lbl">Original</span>
+                  <div class="br-track">
+                    <div class="br-fill original-fill" id="bar-orig-coherence" style="width:35%"></div>
+                  </div>
+                  <span class="br-val" id="val-orig-coherence">35</span>
+                </div>
+                <div class="bar-row">
+                  <span class="br-lbl">Refined</span>
+                  <div class="br-track">
+                    <div class="br-fill refined-fill" id="bar-ref-coherence" style="width:98%"></div>
+                  </div>
+                  <span class="br-val" id="val-ref-coherence">98</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="metric-card highlight-card" id="metric-overall">
+              <div class="mc-header">
+                <span class="mc-name">Overall Quality</span>
+                <span class="mc-delta highlight-delta" id="delta-overall">+68</span>
+              </div>
+              <div class="mc-bars">
+                <div class="bar-row">
+                  <span class="br-lbl">Original</span>
+                  <div class="br-track">
+                    <div class="br-fill original-fill" id="bar-orig-overall" style="width:28%"></div>
+                  </div>
+                  <span class="br-val" id="val-orig-overall">28</span>
+                </div>
+                <div class="bar-row">
+                  <span class="br-lbl">Refined</span>
+                  <div class="br-track">
+                    <div class="br-fill refined-fill" id="bar-ref-overall" style="width:96%"></div>
+                  </div>
+                  <span class="br-val" id="val-ref-overall">96</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="outputs-section">
+          <div class="section-heading">
+            <span class="sh-icon">🤖</span>
+            <span>Gemini Response Comparison</span>
+          </div>
+          <p class="section-description">
+            Compare how the model responds to the original prompt and the refined instructions.
+          </p>
+
+          <div class="outputs-grid">
+            <article class="output-panel baseline-output-panel">
+              <div class="op-header">
+                <span class="op-badge baseline-badge">01 · BASELINE RESPONSE</span>
+                <span class="op-model">gemini-2.5-flash</span>
+              </div>
+              <div class="op-meta-notice">
+                ⚠️ Response generated from the original prompt.
+              </div>
+              <div class="op-body" id="baseline-response-text"></div>
+            </article>
+
+            <article class="output-panel refined-output-panel">
+              <div class="op-header">
+                <span class="op-badge refined-badge">02 · IMPROVED RESPONSE</span>
+                <span class="op-model">gemini-2.5-flash</span>
+              </div>
+              <div class="op-meta-notice success-notice">
+                ✓ Response generated from the refined prompt.
+              </div>
+              <div class="op-body" id="refined-response-text"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="learnings-card">
+          <div class="learnings-title">
+            <span>💡</span>
+            <span>Prompt Engineering Takeaways</span>
+          </div>
+
+          <div class="learnings-grid">
+            <article class="learning-item">
+              <strong>01. Resolve Contradictions</strong>
+              <p>Identify conflicting instructions and establish priorities. If two requirements cannot both be
+                satisfied, explain the trade-off.</p>
+            </article>
+
+            <article class="learning-item">
+              <strong>02. Remove Ambiguity</strong>
+              <p>Replace unclear pronouns and vague expressions with explicit subjects, actions, and expected outcomes.
+              </p>
+            </article>
+
+            <article class="learning-item">
+              <strong>03. Define Output Formats</strong>
+              <p>Specify the required structure, fields, length, and formatting rules to make results easier to
+                evaluate.</p>
+            </article>
+
+            <article class="learning-item">
+              <strong>04. Supply Missing Context</strong>
+              <p>Provide relevant information, examples, and constraints. Ask clarifying questions when essential
+                details are unavailable.</p>
+            </article>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>Experiment 04 · Prompt Engineering Lab</p>
+      <p>Powered by <strong>Google Gemini 2.5 Flash</strong></p>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "experiment16-prompt-eval-and-ethics",
+  "version": "1.0.0",
+  "description": "Experiment 16: Prompt Evaluation, LLM-as-a-Judge, and Adversarial Injection Defense",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

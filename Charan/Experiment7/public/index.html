@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment 7: Constraint Specification &amp; Iterative Refinement | Vyshnavi</title>
+  <meta name="description" content="Experiment 7 - ACETR23 Regulation: Constraint Specification & Iterative Refinement. Tracking prompt performance over two refinement cycles using explicit boundary constraints with Google Gemini.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=7">
+</head>
+<body>
+
+  <!-- Ambient Light Orbs -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="nav-row">
+        <div class="exp-badge">
+          <span class="badge-dot"></span>
+          <span>Experiment 7 • Prompt Engineering Lab</span>
+        </div>
+        <div class="student-meta">
+          <span>Student: <strong>Vyshnavi</strong></span>
+          <span class="meta-sep">•</span>
+          <span>Reg: <strong>ACETR23</strong></span>
+        </div>
+        <nav class="nav-links">
+          <a href="http://localhost:3000" class="nav-link">Exp 1</a>
+          <a href="http://localhost:3001" class="nav-link">Exp 2</a>
+          <a href="http://localhost:3002" class="nav-link">Exp 3</a>
+          <a href="http://localhost:3003" class="nav-link">Exp 4</a>
+          <a href="http://localhost:3004" class="nav-link">Exp 5</a>
+          <a href="http://localhost:3005" class="nav-link">Exp 6</a>
+          <a href="http://localhost:3006" class="nav-link active">Exp 7</a>
+        </nav>
+      </div>
+
+      <div class="header-content">
+        <h1 class="header-title">
+          Constraint Specification <span class="vs-text">&amp;</span> <span class="grad-text">Iterative Refinement</span>
+        </h1>
+        <p class="header-subtitle">
+          Progressively inject constraints (word boundaries, bullet formatting schemas, and mandatory domain keywords) across three refinement cycles to quantify deterministic control over model output.
+        </p>
+
+        <!-- Concept Strip -->
+        <div class="concept-strip">
+          <div class="cs-item"><span class="cs-icon">🔄</span> Multi-Stage Refinement</div>
+          <div class="cs-item"><span class="cs-icon">📏</span> Exact Word Boundaries (80–100 Words)</div>
+          <div class="cs-item"><span class="cs-icon">📋</span> Schema Formatting (5 Bullets)</div>
+          <div class="cs-item"><span class="cs-icon">🎯</span> Keyword Enforcement (5 Core Terms)</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Input Panel -->
+      <section class="card config-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-num">01</span>
+            <div>
+              <h2 class="card-title">Technical Article &amp; Constraint Parameters</h2>
+              <p class="card-description">Select a preset article or paste custom technical text to observe multi-stage constraint adherence.</p>
+            </div>
+          </div>
+          <span class="color-badge">Theme: DarkGray #A9A9A9</span>
+        </div>
+
+        <div class="card-body">
+          <div class="preset-row">
+            <span class="preset-label">Article Presets:</span>
+            <div class="preset-buttons">
+              <button type="button" class="preset-btn active" data-preset="ai">Artificial Intelligence &amp; Deep Learning</button>
+              <button type="button" class="preset-btn" data-preset="quantum">Quantum Computing Breakthroughs</button>
+              <button type="button" class="preset-btn" data-preset="energy">Renewable Energy Grid Transition</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="articleInput" class="form-label">Source Article Text for Summarization</label>
+              <span id="articleWordCount" class="counter-badge">186 words</span>
+            </div>
+            <textarea id="articleInput" class="form-control" rows="6" placeholder="Enter article content..."></textarea>
+          </div>
+
+          <!-- Constraints Blueprint -->
+          <div class="constraints-blueprint">
+            <div class="blueprint-col">
+              <span class="blueprint-badge unconstrained">Cycle 1 Blueprint</span>
+              <h4>Minimal Baseline</h4>
+              <p>Simple prompt directive: <code>"Summarize the following article."</code> with zero boundary constraints.</p>
+            </div>
+            <div class="blueprint-col">
+              <span class="blueprint-badge length-constrained">Cycle 2 Blueprint</span>
+              <h4>Length &amp; Style Filter</h4>
+              <p>Enforces length boundaries and language simplification: <code>80-100 words</code> in simple English.</p>
+            </div>
+            <div class="blueprint-col">
+              <span class="blueprint-badge strict-constrained">Cycle 3 Blueprint</span>
+              <h4>Full Multi-Constraint Spec</h4>
+              <p>Enforces <code>Exactly 5 bullets</code>, <code>80-100 words</code>, and <code>5 required technical keywords</code>.</p>
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <button id="runBtn" class="btn btn-primary">
+              <span class="btn-icon">⚡</span>
+              <span class="btn-text">Execute 3-Cycle Refinement</span>
+            </button>
+            <div id="statusIndicator" class="status-indicator hidden">
+              <div class="spinner"></div>
+              <span id="statusText">Generating progressive refinement cycles with Gemini...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <section id="resultsSection" class="results-section hidden">
+        <div class="section-title-bar">
+          <div>
+            <h2 class="section-title">Iterative Refinement Lifecycle (Cycles 1 – 3)</h2>
+            <p class="section-desc">Observe the progressive transformation from open-ended prose into strict constraint-compliant structured bullets.</p>
+          </div>
+          <div class="filter-tabs">
+            <button class="tab-btn active" data-tab="all">All Cycles</button>
+            <button class="tab-btn" data-tab="cycle_1">Cycle 1</button>
+            <button class="tab-btn" data-tab="cycle_2">Cycle 2</button>
+            <button class="tab-btn" data-tab="cycle_3">Cycle 3</button>
+          </div>
+        </div>
+
+        <!-- 3 Comparison Cards Grid -->
+        <div id="cardsGrid" class="cards-grid"></div>
+
+        <!-- Summary Progression Table -->
+        <div class="card table-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Iterative Refinement Comparative Performance Matrix</h3>
+              <p class="card-description">Quantitative assessment of constraint satisfaction across progressive cycles</p>
+            </div>
+            <span class="color-badge">Empirical Results</span>
+          </div>
+          <div class="table-responsive">
+            <table class="summary-table">
+              <thead>
+                <tr>
+                  <th>Refinement Stage</th>
+                  <th>Injected Constraints</th>
+                  <th>Word Count (80-100)</th>
+                  <th>Bullet Structure (5 pts)</th>
+                  <th>Keywords Coverage</th>
+                  <th>Constraint Compliance</th>
+                  <th>Assessment</th>
+                </tr>
+              </thead>
+              <tbody id="summaryTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Experiment 7 · Prompt Engineering Lab · Aditya College of Engineering &amp; Technology · <strong>DarkGray (#A9A9A9) Edition</strong></p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>

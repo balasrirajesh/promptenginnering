@@ -1,0 +1,717 @@
+/* ==============================================================================
+   EXPERIMENT 13: CONSTRUCTING & RUNNING A BASIC RAG CHAIN
+   Design System: DarkGray / Mid-Gray Theme (#A9A9A9)
+   Student      : Vyshnavi | Regulation: ACETR23
+   ============================================================================== */
+
+:root {
+  /* Strict Mid-Gray / DarkGray Palette */
+  --bg-main: #A9A9A9;
+  --bg-card: #ffffff;
+  --border-strong: #737373;
+  --border-subtle: #d1d5db;
+  --border-card: #525252;
+  
+  /* Text Contrast Hierarchy */
+  --text-primary: #090d16;
+  --text-secondary: #1e293b;
+  --text-muted: #475569;
+  --text-light: #64748b;
+
+  /* Theme Accents */
+  --primary: #4338ca;
+  --primary-hover: #3730a3;
+  --accent-rag: #059669;
+  --accent-memory: #7c3aed;
+
+  /* Typography & Layout */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, "Courier New", monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ------------------------------------------------------------------------------
+   Top Navigation Bar & Student Metadata Header
+   ------------------------------------------------------------------------------ */
+.app-nav {
+  background: #ffffff;
+  border-bottom: 2px solid var(--border-card);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.nav-container {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 0.85rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #000000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+}
+
+.brand-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #090d16;
+  letter-spacing: -0.02em;
+}
+
+.brand-sub {
+  font-size: 0.78rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.nav-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1.5px solid var(--border-strong);
+}
+
+.badge-doc {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #059669;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #059669;
+}
+
+.badge-primary {
+  background: #f1f5f9;
+  color: #090d16;
+}
+
+.btn-clear {
+  background: #ffffff;
+  border: 1.5px solid var(--border-strong);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.btn-clear:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #b91c1c;
+}
+
+/* ------------------------------------------------------------------------------
+   Lab Multi-Port Navigation Strip (Ports 3000 to 3012)
+   ------------------------------------------------------------------------------ */
+.lab-nav-strip {
+  background: #ffffff;
+  border-bottom: 2px solid var(--border-card);
+  padding: 0.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.lab-nav-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: 0.4rem;
+}
+
+.lab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #1e293b;
+  background: #f8fafc;
+  border: 1.5px solid var(--border-strong);
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.lab-pill:hover {
+  background: #e2e8f0;
+  border-color: #0f172a;
+  color: #090d16;
+}
+
+.lab-pill.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ------------------------------------------------------------------------------
+   Main Workspace Layout
+   ------------------------------------------------------------------------------ */
+.app-main {
+  flex: 1;
+  padding: 1.5rem 2rem 2.5rem 2rem;
+}
+
+.main-layout {
+  max-width: 1560px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 1.5rem;
+  min-height: calc(100vh - 180px);
+}
+
+/* ------------------------------------------------------------------------------
+   Left Sidebar: Document & Pipeline Inspector
+   ------------------------------------------------------------------------------ */
+.sidebar-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.side-card {
+  background: #ffffff;
+  border: 2px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.side-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.side-icon {
+  font-size: 1.1rem;
+}
+
+.side-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #090d16;
+}
+
+.doc-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.doc-file {
+  background: #f8fafc;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.doc-icon {
+  font-size: 1.3rem;
+}
+
+.doc-name-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-name {
+  font-size: 0.825rem;
+  font-weight: 800;
+  color: #090d16;
+}
+
+.doc-meta {
+  font-size: 0.72rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.doc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.doc-stat-item {
+  background: #f8fafc;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.stat-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #475569;
+}
+
+.stat-value {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #090d16;
+}
+
+.text-green {
+  color: #059669;
+}
+
+/* Prompt Chips */
+.side-hint {
+  font-size: 0.75rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.prompt-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.chip {
+  background: #f8fafc;
+  border: 1.5px solid var(--border-strong);
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chip:hover {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+/* Pipeline Flow */
+.pipeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pipeline-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f8fafc;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.pipeline-step.active {
+  border-color: #059669;
+  background: #ecfdf5;
+}
+
+.pipe-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.pipeline-step.active .pipe-circle {
+  background: #059669;
+}
+
+.pipe-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.pipe-name {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #090d16;
+}
+
+.pipe-sub {
+  font-size: 0.68rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.pipe-line {
+  width: 2px;
+  height: 12px;
+  background: #94a3b8;
+  margin-left: 20px;
+}
+
+/* ------------------------------------------------------------------------------
+   Right Column: Interactive Chat Area
+   ------------------------------------------------------------------------------ */
+.chat-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-container {
+  background: #ffffff;
+  border: 2px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.chat-header {
+  background: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.bot-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+.chat-topic {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #090d16;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #059669;
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #059669;
+}
+
+/* Messages Area */
+.chat-messages {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-height: 440px;
+  max-height: 600px;
+  background: #f8fafc;
+}
+
+.msg-row {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 88%;
+}
+
+.user-row {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.assistant-row {
+  align-self: flex-start;
+}
+
+.msg-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  border: 1px solid #000000;
+}
+
+.user-avatar {
+  background: #4338ca;
+}
+
+.msg-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.msg-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.sender-name {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #090d16;
+}
+
+.tag-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.12rem 0.5rem;
+  border-radius: 4px;
+}
+
+.tag-system {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.tag-rag {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.tag-memory {
+  background: #f3e8ff;
+  color: #7c3aed;
+  border: 1px solid #ddd6fe;
+}
+
+.msg-bubble {
+  padding: 0.85rem 1.15rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.user-bubble {
+  background: #0f172a;
+  color: #ffffff;
+  border-radius: 12px 12px 2px 12px;
+  border: 1px solid #000000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.assistant-bubble {
+  background: #ffffff;
+  color: #090d16;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 12px 12px 12px 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Retrieved Chunks Accordion Box */
+.retrieved-box {
+  margin-top: 0.75rem;
+  border-top: 1.5px dashed #cbd5e1;
+  padding-top: 0.65rem;
+}
+
+.retrieved-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #059669;
+  cursor: pointer;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+}
+
+.retrieved-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.chunk-snippet {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0.65rem;
+  font-size: 0.78rem;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.chunk-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #090d16;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: var(--font-mono);
+}
+
+/* Chat Input Bar */
+.chat-input-bar {
+  background: #ffffff;
+  border-top: 2px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+}
+
+.input-form {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.chat-input {
+  flex: 1;
+  border: 2px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #090d16;
+  outline: none;
+  background: #ffffff;
+  transition: border-color 0.2s ease;
+}
+
+.chat-input:focus {
+  border-color: #4338ca;
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.15);
+}
+
+.btn-send {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #0f172a;
+  color: #ffffff;
+  border: 2px solid #0f172a;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-send:hover {
+  background: #334155;
+  border-color: #334155;
+}
+
+@media (max-width: 1024px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+}

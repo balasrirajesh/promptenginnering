@@ -1,0 +1,15 @@
+{
+  "name": "experiment8-structured-format-prompting",
+  "version": "1.0.0",
+  "description": "Experiment 8: Structured Format Prompting (Markdown Tables & Bullets) - ACETR23 Regulation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "marked": "^15.0.7"
+  }
+}

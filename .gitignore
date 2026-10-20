@@ -1,0 +1,25 @@
+﻿# Ignore other workspace folders
+/Rama Pithani/
+/Vyshnavi/
+
+# Node dependencies
+node_modules/
+**/node_modules/
+
+# Environment files and API keys
+.env
+*.env
+**/.env
+**/*.env
+
+# Python artifacts
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# System / OS files
+.DS_Store
+Thumbs.db
